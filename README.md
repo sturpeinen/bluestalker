@@ -13,7 +13,7 @@ Usage of bluestalker:
     	Path for the unix domain socket (default "/tmp/bluestalker.sock")
 ```
 
-# Usage
+## Usage
 Run **bluestalker**.
 ```
 $ bluestalker -host 192.0.2.42 -unix /tmp/bs.sock
@@ -33,7 +33,7 @@ bluewalker/de:ad:00:03:13:37 {"device":{"address":"de:ad:00:03:13:37","type":"LE
 ...
 ```
 
-# Build
+## Build
 Install [Go](https://golang.org/doc/install) and run ```go build```.
 
 ```
