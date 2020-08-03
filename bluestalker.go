@@ -7,6 +7,7 @@ import (
 	"fmt"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"io"
+	"io/ioutil"
 	"net"
 	"os"
 	"os/signal"
@@ -46,7 +47,22 @@ func main() {
 	mqtt_h := flag.String("host", "127.0.0.1", "MQTT host to connect to")
 	mqtt_p := flag.Int("port", 1883, "MQTT port to connect to")
 	mqtt_r := flag.Bool("retain", false, "MQTT message should be retained")
+	topics_p := flag.String("topics", "", "Path for JSON file with topics (format {\"<address>\": \"/some/topic\", ..})")
 	flag.Parse()
+
+	var topics = make(map[string]string)
+	if len(*topics_p) > 0 {
+		data, err := ioutil.ReadFile(*topics_p)
+		if err != nil {
+			fmt.Println("Could not read topics:", err)
+			return
+		}
+		err = json.Unmarshal(data, &topics)
+		if err != nil {
+			fmt.Println("Could not parse topics:", err)
+			return
+		}
+	}
 
 	if _, err := os.Stat(*path); !os.IsNotExist(err) {
 		fmt.Println(*path, "already exists")
@@ -92,6 +108,9 @@ func main() {
 			}
 
 			topic := fmt.Sprintf("bluewalker/%s", address)
+			if t, ok := topics[address]; ok {
+				topic = t
+			}
 			client.Publish(topic, 0, *mqtt_r, string(line))
 			fmt.Println(topic, string(line))
 		}
